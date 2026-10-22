@@ -1,14 +1,18 @@
 ---
-title: AI Content Detector
-emoji: 🛡️
-colorFrom: indigo
-colorTo: blue
-sdk: docker
-app_port: 7860
-pinned: false
+language:
+- en
+license: mit
+tags:
+- ai-content-detector
+- text-classification
+- nlp
+- forensics
+pipeline_tag: text-classification
+widget:
+- text: "Artificial intelligence has undeniably revolutionized modern natural language processing systems across global academia."
 ---
 
-# AI Content Detector: Explainable AI & Plagiarism Forensic Suite
+# AI Content Detector: Explainable Multi-Vector Forensic Intelligence Suite
 
 > **Multi-Tier Forensic System**  
 > *Designed for academic and professional evaluators to detect, quantify, localize, and explain generative AI text across 7 document formats while rigorously preventing false accusations.*
