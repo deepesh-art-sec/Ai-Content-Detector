@@ -1,0 +1,24 @@
+{
+  "manifest_version": 3,
+  "name": "VeritasDoc: Explainable AI Content Inspector",
+  "version": "1.0.0",
+  "description": "Evaluator browser overlay to inspect, quantify, and explain generative AI text directly inside Canvas, Moodle, and web pages.",
+  "permissions": [
+    "activeTab",
+    "storage"
+  ],
+  "host_permissions": [
+    "http://localhost:8000/*"
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "VeritasDoc AI Inspector"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ]
+}

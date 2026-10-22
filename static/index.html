@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-[#080c14] text-slate-100 antialiased selection:bg-indigo-500 selection:text-white">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>VeritasDoc &bull; AI Content & Forensic Evaluation Suite</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['"Plus Jakarta Sans"', 'sans-serif'],
+            mono: ['"JetBrains Mono"', 'monospace'],
+          },
+          colors: {
+            brand: {
+              50: '#eef2ff',
+              100: '#e0e7ff',
+              200: '#c7d2fe',
+              300: '#a5b4fc',
+              400: '#818cf8',
+              500: '#6366f1',
+              600: '#4f46e5',
+              700: '#4338ca',
+              800: '#3730a3',
+              900: '#312e81',
+              950: '#1e1b4b',
+            },
+            surface: {
+              800: '#131b2e',
+              850: '#0f172a',
+              900: '#0b1120',
+              950: '#070b14',
+            }
+          }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    /* Modern Glassmorphism & Elevation */
+    .glass-card {
+      background: rgba(15, 23, 42, 0.72);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-card-interactive {
+      background: rgba(15, 23, 42, 0.72);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    .glass-card-interactive:hover {
+      border-color: rgba(99, 102, 241, 0.35);
+      box-shadow: 0 10px 30px -10px rgba(99, 102, 241, 0.15);
+    }
+
+    /* Circular SVG Gauge Transition */
+    .gauge-circle {
+      transition: stroke-dashoffset 1s cubic-bezier(0.4, 0, 0.2, 1), stroke 0.4s ease;
+      transform: rotate(-90deg);
+      transform-origin: 50% 50%;
+    }
+
+    /* Interactive Sentence Highlighting */
+    .sentence-pill {
+      transition: all 0.18s ease;
+      cursor: pointer;
+      border-radius: 4px;
+      padding: 1px 3px;
+      display: inline;
+    }
+    .sentence-pill:hover {
+      filter: brightness(1.22);
+      outline: 2px solid rgba(255, 255, 255, 0.35);
+    }
+    .sentence-active {
+      outline: 2px solid #818cf8 !important;
+      filter: brightness(1.3) !important;
+      box-shadow: 0 0 16px rgba(129, 140, 248, 0.45);
+    }
+
+    /* Custom Scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: rgba(11, 17, 32, 0.6);
+    }
+    ::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.15);
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: rgba(99, 102, 241, 0.4);
+    }
+  </style>
+</head>
+
+<body class="h-full flex flex-col font-sans bg-[#080c14] text-slate-100 antialiased selection:bg-brand-500 selection:text-white relative overflow-x-hidden">
+
+  <!-- ================= TOP NAVIGATION BAR ================= -->
+  <header class="border-b border-white/[0.08] bg-[#070b14]/85 backdrop-blur-xl sticky top-0 z-40">
+    <div class="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
+      
+      <!-- Brand Logo & Project Title -->
+      <div class="flex items-center gap-3.5">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-brand-600 via-indigo-500 to-cyan-400 p-0.5 shadow-md shadow-brand-500/20 flex items-center justify-center">
+          <div class="w-full h-full bg-[#080c14] rounded-[10px] flex items-center justify-center font-bold text-lg text-transparent bg-clip-text bg-gradient-to-r from-brand-200 to-cyan-300 font-mono">
+            Ψ
+          </div>
+        </div>
+        <div>
+          <div class="flex items-center gap-2">
+            <h1 class="text-base font-bold tracking-tight text-white flex items-center gap-1.5">
+              <span>VeritasDoc</span>
+              <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-400 to-cyan-400">Forensics</span>
+            </h1>
+            <span class="text-[10px] font-mono tracking-widest uppercase bg-brand-500/10 text-brand-300 px-2 py-0.5 rounded-full font-bold border border-brand-500/20">
+              A1 Suite
+            </span>
+          </div>
+          <p class="text-[11px] text-slate-400 font-mono hidden sm:block">Tri-Core Consensus &bull; Gaussian Spatial Smoothing &bull; Academic Guardrails</p>
+        </div>
+      </div>
+
+      <!-- Header Controls: Telemetry Badge, Sensitivity, History Toggle -->
+      <div class="flex items-center gap-2.5 sm:gap-3">
+        <!-- Live System Status -->
+        <div id="model-status-badge" class="flex items-center gap-2 bg-white/[0.03] border border-white/10 px-3 py-1.5 rounded-full">
+          <span class="relative flex h-2 w-2">
+            <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75" id="status-ping"></span>
+            <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500" id="status-dot"></span>
+          </span>
+          <span id="model-status-text" class="font-mono text-xs text-emerald-400 font-medium">Neural Core (3/3)</span>
+        </div>
+
+        <!-- History Drawer Toggle Button -->
+        <button onclick="toggleHistoryDrawer()" id="history-toggle-btn" class="flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-mono bg-white/[0.04] hover:bg-white/[0.09] text-slate-200 border border-white/10 transition cursor-pointer">
+          <span>📜</span>
+          <span class="hidden sm:inline">Archives</span>
+          <span id="header-history-count" class="text-[10px] bg-brand-500/20 text-brand-300 px-1.5 py-0.2 rounded-full border border-brand-500/30">0</span>
+        </button>
+      </div>
+
+    </div>
+  </header>
+
+  <!-- ================= ERROR NOTIFICATION BANNER ================= -->
+  <div id="error-banner" class="hidden bg-rose-950/85 border-b border-rose-500/30 px-4 py-3 text-rose-200 backdrop-blur-md transition-all z-30">
+    <div class="w-full max-w-[1920px] mx-auto flex items-start justify-between gap-3 px-4 sm:px-6">
+      <div class="flex items-center gap-2.5">
+        <svg class="w-5 h-5 text-rose-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+        </svg>
+        <span id="error-message" class="text-sm font-medium">An error occurred during analysis.</span>
+      </div>
+      <button onclick="dismissError()" class="text-rose-400 hover:text-white text-sm font-bold p-1 cursor-pointer">✕</button>
+    </div>
+  </div>
+
+  <!-- ================= SHORT TEXT GUARDRAIL ALERT ================= -->
+  <div id="short-text-banner" class="hidden bg-amber-950/80 border-b border-amber-500/30 px-4 py-3 text-amber-200 backdrop-blur-md transition-all z-30">
+    <div class="w-full max-w-[1920px] mx-auto flex items-center justify-between gap-3 px-4 sm:px-6">
+      <div class="flex items-center gap-2.5">
+        <span class="text-base">⚠️</span>
+        <span class="text-xs sm:text-sm font-mono font-medium">
+          <b>Academic Guardrail Alert:</b> Document sample contains fewer than 50 words. Evaluation results may have reduced statistical certainty.
+        </span>
+      </div>
+      <button onclick="document.getElementById('short-text-banner').classList.add('hidden')" class="text-amber-400 hover:text-white text-xs font-bold p-1 cursor-pointer">✕</button>
+    </div>
+  </div>
+
+  <!-- ================= MAIN DASHBOARD CONTAINER ================= -->
+  <main class="w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-5 flex-1 space-y-5">
+
+    <!-- ================= 1. DOCUMENT INGESTION STATION ================= -->
+    <section id="input-station" class="glass-card rounded-2xl p-5 sm:p-6 shadow-2xl transition-all duration-300">
+      
+      <!-- Collapsed Compact Ingestion Bar (Shown after results are loaded) -->
+      <div id="input-collapsed-bar" class="hidden flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <div class="flex items-center gap-3 overflow-hidden">
+          <div class="w-10 h-10 rounded-xl bg-brand-500/15 text-brand-300 border border-brand-500/30 flex items-center justify-center font-mono text-base shrink-0">
+            📄
+          </div>
+          <div class="overflow-hidden">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-sm font-bold text-white truncate max-w-sm sm:max-w-md" id="collapsed-filename">document.docx</span>
+              <span id="collapsed-verdict" class="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-brand-500/10 text-brand-300 border border-brand-500/20">Verified</span>
+              <span id="collapsed-stats" class="text-xs font-mono text-slate-400 hidden md:inline">&bull; 0 words</span>
+            </div>
+            <span class="text-[11px] font-mono text-slate-400 block mt-0.5">Analysis loaded &bull; Instant re-scan available</span>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <button onclick="expandInputStation()" class="px-4 py-2 rounded-xl text-xs font-bold text-white bg-brand-600 hover:bg-brand-500 shadow-md shadow-brand-600/25 transition cursor-pointer flex items-center gap-1.5">
+            <span>➕</span>
+            <span>New Scan / Upload</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Expanded Ingestion Panel (Visible initially) -->
+      <div id="input-full-view" class="space-y-4">
+        
+        <!-- Header with Input Mode Switcher -->
+        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+          <div>
+            <h2 class="text-base font-bold text-white flex items-center gap-2">
+              <span>Document Ingestion Engine</span>
+              <span class="text-[10px] font-mono bg-cyan-500/10 text-cyan-300 px-2 py-0.5 rounded-full border border-cyan-500/20">7 Formats Supported</span>
+            </h2>
+            <p class="text-xs text-slate-400 mt-0.5">Ingests .pdf, .docx, .doc, .pptx, .ppt, .rtf, .txt with SHA-256 verification</p>
+          </div>
+
+          <!-- Mode Selector Tabs -->
+          <div class="flex items-center bg-surface-950 p-1 rounded-xl text-xs font-mono border border-white/5">
+            <button onclick="switchInputMode('file')" id="input-tab-file" class="px-3.5 py-1.5 rounded-lg bg-brand-600 text-white font-semibold transition cursor-pointer">
+              📂 File Upload
+            </button>
+            <button onclick="switchInputMode('text')" id="input-tab-text" class="px-3.5 py-1.5 rounded-lg text-slate-400 hover:text-white transition cursor-pointer">
+              📝 Direct Text Paste
+            </button>
+          </div>
+        </div>
+
+        <!-- Mode A: File Dropzone -->
+        <div id="dropzone-mode" class="space-y-3">
+          <div id="dropzone" class="border-2 border-dashed border-white/15 hover:border-brand-500/70 hover:bg-brand-500/[0.03] rounded-2xl p-7 text-center cursor-pointer transition-all duration-200 relative overflow-hidden group">
+            <input type="file" id="file-input" class="hidden" accept=".txt,.docx,.pdf,.rtf,.pptx,.ppt,.doc">
+            <div class="flex flex-col items-center justify-center space-y-2.5 relative z-10">
+              <div class="w-12 h-12 rounded-2xl bg-white/[0.04] border border-white/10 group-hover:scale-105 group-hover:border-brand-500/40 text-brand-400 flex items-center justify-center transition-all duration-200">
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.75" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                </svg>
+              </div>
+              <div>
+                <p class="text-sm font-semibold text-slate-200">
+                  <span class="text-brand-400 group-hover:underline">Click to browse document</span> or drag & drop here
+                </p>
+                <p class="text-xs text-slate-400 mt-0.5 font-mono">
+                  Supported formats: PDF, DOCX, DOC, PPTX, PPT, RTF, TXT (Max 20MB)
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Selected File Chip -->
+          <div id="file-preview" class="hidden flex items-center justify-between p-3.5 bg-surface-950/80 border border-white/10 rounded-xl">
+            <div class="flex items-center gap-3">
+              <div class="w-9 h-9 rounded-lg bg-brand-500/20 text-brand-300 flex items-center justify-center font-mono text-xs font-bold" id="file-ext-badge">
+                DOC
+              </div>
+              <div>
+                <p class="text-xs font-bold text-white truncate max-w-xs sm:max-w-md" id="file-name">document.docx</p>
+                <p class="text-[11px] text-slate-400 font-mono" id="file-size">0 KB</p>
+              </div>
+            </div>
+            <button onclick="clearSelectedFile()" class="text-slate-400 hover:text-rose-400 text-xs font-mono p-1.5 transition cursor-pointer" title="Remove file">
+              ✕ Clear
+            </button>
+          </div>
+        </div>
+
+        <!-- Mode B: Quick Paste Textarea -->
+        <div id="paste-mode" class="hidden space-y-2">
+          <div class="relative">
+            <textarea id="paste-text-input" rows="6" class="w-full bg-surface-950/90 border border-white/10 focus:border-brand-500 rounded-xl p-4 text-xs sm:text-sm font-mono text-slate-200 focus:outline-none focus:ring-1 focus:ring-brand-500/50 resize-y placeholder:text-slate-600 transition" placeholder="Paste essay, research manuscript, or student submission text here to inspect forensic probability..."></textarea>
+            <div class="absolute bottom-3 right-3 text-[11px] font-mono text-slate-400 bg-surface-900/80 px-2 py-0.5 rounded border border-white/5">
+              <span id="paste-word-count">0</span> words
+            </div>
+          </div>
+        </div>
+
+        <!-- Ingestion Footer: Submit Button -->
+        <div class="flex items-center justify-end pt-3 border-t border-white/5">
+          <!-- Analyze CTA Button -->
+          <button id="analyze-btn" onclick="submitAnalysis()" class="w-full sm:w-auto px-7 py-2.5 rounded-xl font-bold text-xs sm:text-sm text-white bg-gradient-to-r from-brand-600 to-indigo-600 hover:from-brand-500 hover:to-indigo-500 shadow-lg shadow-brand-600/30 transition-all duration-200 cursor-pointer flex items-center justify-center gap-2">
+            <span>⚡ Run Forensic Analysis</span>
+          </button>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ================= 2. LOADING STATE CARD ================= -->
+    <div id="loading-card" class="hidden glass-card rounded-2xl p-10 text-center space-y-4 shadow-2xl">
+      <div class="w-16 h-16 rounded-full border-4 border-brand-500/20 border-t-brand-500 animate-spin mx-auto"></div>
+      <div class="space-y-1">
+        <h3 class="text-base font-bold text-white">Running Multi-Tier Forensic Evaluation...</h3>
+        <p class="text-xs font-mono text-slate-400" id="loading-step-text">
+          Extracting text hierarchy &bull; Ingesting into Tri-Core Neural Consensus &bull; Applying Gaussian spatial smoothing
+        </p>
+      </div>
+      <div class="max-w-md mx-auto h-1.5 bg-surface-950 rounded-full overflow-hidden border border-white/5">
+        <div class="h-full bg-gradient-to-r from-brand-500 via-indigo-500 to-cyan-400 animate-pulse w-3/4"></div>
+      </div>
+    </div>
+
+    <!-- ================= 3. RESULTS MASTER STATION ================= -->
+    <div id="results-card" class="hidden space-y-5">
+      
+      <!-- ================= 3A. EXECUTIVE VERDICT DOSSIER ================= -->
+      <section class="glass-card rounded-2xl p-5 sm:p-6 border border-white/10 shadow-2xl">
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-6 items-center">
+          
+          <!-- Column 1: Circular Gauge & Verdict Badge (4 Cols) -->
+          <div class="lg:col-span-4 flex items-center gap-5 sm:border-r border-white/5 pr-4">
+            
+            <!-- Circular Gauge Graphic -->
+            <div class="relative w-28 h-28 sm:w-32 sm:h-32 shrink-0">
+              <svg class="w-full h-full" viewBox="0 0 100 100">
+                <!-- Background Ring -->
+                <circle cx="50" cy="50" r="40" stroke="rgba(255,255,255,0.06)" stroke-width="8" fill="none" />
+                <!-- Active Indicator Ring (circ = 2 * pi * 40 = 251.32) -->
+                <circle id="gauge-circle" class="gauge-circle" cx="50" cy="50" r="40" stroke="#f43f5e" stroke-width="8" stroke-dasharray="251.32" stroke-dashoffset="251.32" stroke-linecap="round" fill="none" />
+              </svg>
+              <!-- Center Percent Text -->
+              <div class="absolute inset-0 flex flex-col items-center justify-center">
+                <span id="ai-percent-text" class="text-2xl sm:text-3xl font-black font-mono tracking-tight text-white">0%</span>
+                <span class="text-[9px] font-mono uppercase tracking-wider text-slate-400">AI Content</span>
+              </div>
+            </div>
+
+            <!-- Verdict Text & Confidence -->
+            <div class="space-y-1.5">
+              <span id="verdict-badge" class="inline-block text-xs font-mono font-bold px-3 py-1 rounded-full border bg-rose-500/10 text-rose-300 border-rose-500/30">
+                High AI Probability
+              </span>
+              <h3 id="verdict-title" class="text-base sm:text-lg font-bold text-white tracking-tight leading-tight">
+                AI Generated
+              </h3>
+              <p id="confidence-level-text" class="text-xs text-slate-400 font-mono">
+                Confidence: 98.4% &bull; Zone RED
+              </p>
+
+              <!-- Detected AI Model / Generator Badge (Bonus: Model Attribution) -->
+              <div id="ai-platform-container" class="pt-2 border-t border-white/5 space-y-1">
+                <span class="text-[10px] font-mono text-slate-400 uppercase tracking-wider block">Identified AI Source:</span>
+                <div class="flex items-center gap-2 flex-wrap">
+                  <span id="ai-platform-badge" class="text-xs font-mono font-bold px-2.5 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 flex items-center gap-1.5">
+                    <span>🤖</span>
+                    <span id="ai-platform-name">ChatGPT-4o (OpenAI)</span>
+                  </span>
+                  <span id="ai-platform-conf" class="text-[11px] font-mono text-slate-400">88% match</span>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Column 2: 5 High-Level KPI Summary Chips (5 Cols) -->
+          <div class="lg:col-span-5 grid grid-cols-2 sm:grid-cols-3 gap-2.5 text-xs font-mono sm:border-r border-white/5 pr-4">
+            
+            <div class="p-2.5 rounded-xl bg-surface-950/80 border border-white/5">
+              <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Sentences</span>
+              <span id="kpi-sentences" class="text-sm font-bold text-white mt-0.5 block">0 / 0 Flags</span>
+              <span id="kpi-sentences-sub" class="text-[10px] text-slate-500 block">Character-weighted</span>
+            </div>
+
+            <div class="p-2.5 rounded-xl bg-surface-950/80 border border-white/5">
+              <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Volume</span>
+              <span id="kpi-words" class="text-sm font-bold text-white mt-0.5 block">0 words</span>
+              <span id="kpi-chars" class="text-[10px] text-slate-500 block">0 characters</span>
+            </div>
+
+            <div class="p-2.5 rounded-xl bg-surface-950/80 border border-white/5">
+              <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Perplexity (PPL)</span>
+              <span id="kpi-ppl" class="text-sm font-bold text-white mt-0.5 block">0.0</span>
+              <span id="kpi-ppl-label" class="text-[10px] text-slate-500 block">Proxy Entropy</span>
+            </div>
+
+            <div class="p-2.5 rounded-xl bg-surface-950/80 border border-white/5">
+              <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Burstiness</span>
+              <span id="kpi-burstiness" class="text-sm font-bold text-white mt-0.5 block">0.00</span>
+              <span id="kpi-burst-label" class="text-[10px] text-slate-500 block">Length variance</span>
+            </div>
+
+            <div class="p-2.5 rounded-xl bg-surface-950/80 border border-white/5">
+              <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Lexical (TTR)</span>
+              <span id="kpi-ttr" class="text-sm font-bold text-white mt-0.5 block">0%</span>
+              <span class="text-[10px] text-slate-500 block">Vocabulary diversity</span>
+            </div>
+
+            <div class="p-2.5 rounded-xl bg-surface-950/80 border border-white/5">
+              <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Plagiarism / Redundancy</span>
+              <span id="kpi-plag" class="text-sm font-bold text-emerald-400 mt-0.5 block">Clean (0%)</span>
+              <span class="text-[10px] text-slate-500 block">Internal n-grams</span>
+            </div>
+
+          </div>
+
+          <!-- Column 3: Action Toolbar & PDF Export (3 Cols) -->
+          <div class="lg:col-span-3 flex flex-col gap-2.5">
+            <button id="download-pdf-btn" onclick="downloadPdfReport()" class="w-full px-4 py-2.5 rounded-xl text-xs font-bold text-white bg-brand-600 hover:bg-brand-500 shadow-md shadow-brand-600/25 transition cursor-pointer flex items-center justify-center gap-2">
+              <span>📄</span>
+              <span>Download PDF Audit Certificate</span>
+            </button>
+
+            <div class="grid grid-cols-2 gap-2">
+              <button onclick="window.print()" class="px-3 py-2 rounded-xl text-xs font-mono bg-surface-950 hover:bg-surface-900 text-slate-300 border border-white/10 transition cursor-pointer flex items-center justify-center gap-1.5">
+                <span>🖨️</span>
+                <span>Print</span>
+              </button>
+              <button onclick="copySummaryToClipboard()" class="px-3 py-2 rounded-xl text-xs font-mono bg-surface-950 hover:bg-surface-900 text-slate-300 border border-white/10 transition cursor-pointer flex items-center justify-center gap-1.5">
+                <span id="copy-summary-icon">📋</span>
+                <span id="copy-summary-text">Copy</span>
+              </button>
+            </div>
+
+            <div class="text-[10px] font-mono text-slate-400 text-center pt-0.5">
+              SHA-256 Verified &bull; Tamper-Evident Report
+            </div>
+          </div>
+
+        </div>
+      </section>
+
+      <!-- ================= 3B. TABBED ANALYTICAL NAVIGATION ================= -->
+      <div class="flex items-center gap-2 border-b border-white/10 pb-3 overflow-x-auto text-xs font-mono">
+        <button onclick="switchResultTab('heatmap')" id="rtab-btn-heatmap" class="px-4 py-2 rounded-xl bg-brand-600 text-white font-bold transition flex items-center gap-2 cursor-pointer shrink-0">
+          <span>📑 Document View & Localization Heatmap</span>
+        </button>
+        <button onclick="switchResultTab('consensus')" id="rtab-btn-consensus" class="px-4 py-2 rounded-xl text-slate-400 hover:text-white bg-surface-950 hover:bg-surface-900 border border-white/5 transition flex items-center gap-2 cursor-pointer shrink-0">
+          <span>🧠 Tri-Core Neural Consensus</span>
+        </button>
+        <button onclick="switchResultTab('forensics')" id="rtab-btn-forensics" class="px-4 py-2 rounded-xl text-slate-400 hover:text-white bg-surface-950 hover:bg-surface-900 border border-white/5 transition flex items-center gap-2 cursor-pointer shrink-0">
+          <span>🔬 Stylometric & Evasion Forensics</span>
+        </button>
+        <button onclick="switchResultTab('sections')" id="rtab-btn-sections" class="hidden px-4 py-2 rounded-xl text-slate-400 hover:text-white bg-surface-950 hover:bg-surface-900 border border-white/5 transition flex items-center gap-2 cursor-pointer shrink-0">
+          <span>📑 Sections / Slides (<span id="tab-sections-badge">0</span>)</span>
+        </button>
+      </div>
+
+      <!-- ================= 3C. TAB 1: DOCUMENT VIEW & SENTENCE HEATMAP (WIDE & IN-DEPTH) ================= -->
+      <div id="rpanel-heatmap" class="space-y-4">
+        <div class="glass-card rounded-2xl p-5 sm:p-6 border border-white/10 shadow-2xl space-y-4">
+          
+          <!-- Heatmap Sub-Header: Title & Filter Buttons -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-white/5 pb-3">
+            <div>
+              <h4 class="text-sm font-bold text-white flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-cyan-400"></span>
+                Document View & Sentence Localization Heatmap
+              </h4>
+              <p class="text-xs text-slate-400 font-mono">Click any highlighted sentence on the left to inspect its complete forensic diagnostic breakdown</p>
+            </div>
+
+            <!-- Filter Buttons: All, Flagged AI, Mixed, Human -->
+            <div class="flex items-center bg-surface-950 p-1 rounded-xl text-xs font-mono border border-white/5">
+              <button onclick="filterSentences('all')" id="tab-filter-all" class="px-2.5 py-1 rounded-lg bg-brand-600 text-white font-semibold transition cursor-pointer">
+                All
+              </button>
+              <button onclick="filterSentences('red')" id="tab-filter-red" class="px-2.5 py-1 rounded-lg text-rose-400 hover:text-white transition cursor-pointer">
+                High AI (&ge;70%)
+              </button>
+              <button onclick="filterSentences('yellow')" id="tab-filter-yellow" class="px-2.5 py-1 rounded-lg text-amber-400 hover:text-white transition cursor-pointer">
+                Uncertain (45-69%)
+              </button>
+              <button onclick="filterSentences('green')" id="tab-filter-green" class="px-2.5 py-1 rounded-lg text-emerald-400 hover:text-white transition cursor-pointer">
+                Human (&lt;45%)
+              </button>
+            </div>
+          </div>
+
+          <!-- Wide Side-by-Side Split: 7 Cols Text Reader, 5 Cols Deep Diagnostic Drawer -->
+          <div class="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+            
+            <!-- Left Pane: Annotated Document Text (7 Cols Wide) -->
+            <div class="lg:col-span-7 bg-surface-950/90 rounded-xl p-5 border border-white/10 min-h-[500px] max-h-[640px] overflow-y-auto space-y-3 leading-relaxed text-xs sm:text-sm font-mono shadow-inner">
+              <div id="annotated-document-content">
+                <!-- Sentences injected dynamically via JS -->
+              </div>
+            </div>
+
+            <!-- Right Pane: Selected Sentence Diagnostic Drawer (5 Cols Detailed) -->
+            <div id="sentence-diagnostic-card" class="lg:col-span-5 bg-surface-950/95 rounded-xl p-5 border border-brand-500/30 space-y-4 min-h-[500px] max-h-[640px] overflow-y-auto shadow-2xl">
+              
+              <!-- Diagnostic Header -->
+              <div class="flex items-center justify-between border-b border-white/10 pb-3">
+                <div class="flex items-center gap-2">
+                  <span class="w-2 h-2 rounded-full bg-brand-400"></span>
+                  <span class="text-xs font-mono font-bold uppercase tracking-wider text-slate-300">Diagnostic Drawer</span>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span id="diag-sentence-index" class="text-xs font-mono text-brand-300 font-semibold px-2.5 py-0.5 rounded bg-brand-500/10 border border-brand-500/20">Sentence #1</span>
+                  <span id="diag-length-info" class="text-[11px] font-mono text-slate-400">0 words</span>
+                </div>
+              </div>
+
+              <!-- Sentence Under Inspection Quote Box -->
+              <div>
+                <span class="text-[10px] font-mono text-slate-400 uppercase tracking-wider block mb-1">Sentence Under Inspection</span>
+                <div id="diag-quote-box" class="p-3.5 rounded-lg bg-surface-900 border-l-4 border-brand-500 text-xs sm:text-sm text-slate-200 leading-relaxed font-sans shadow-inner">
+                  <p id="diag-sentence-text" class="italic">
+                    Click any highlighted sentence on the left to inspect its complete forensic breakdown.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Score Telemetry (Calibrated vs Raw Neural) -->
+              <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+                <div class="p-3 rounded-lg bg-surface-900 border border-white/5 space-y-0.5">
+                  <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Calibrated Score</span>
+                  <span id="diag-smoothed-score" class="text-base font-bold text-slate-100 block">--</span>
+                  <span class="text-[10px] text-slate-500 block">Gaussian ±1 Neighbor Kernel</span>
+                </div>
+                <div class="p-3 rounded-lg bg-surface-900 border border-white/5 space-y-0.5">
+                  <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Raw Neural Score</span>
+                  <span id="diag-raw-score" class="text-base font-bold text-slate-200 block">--</span>
+                  <span class="text-[10px] text-slate-500 block">Tri-Core Ensemble Output</span>
+                </div>
+              </div>
+
+              <!-- Forensic Linguistic Reasoning Card (MAIN EXPLAINABILITY USER REQUIREMENT) -->
+              <div class="p-4 rounded-xl bg-brand-950/25 border border-brand-500/30 space-y-2.5">
+                <div class="flex items-center justify-between">
+                  <span class="text-xs font-mono font-bold text-brand-300 flex items-center gap-1.5 uppercase tracking-wider">
+                    <span>🔬</span> Forensic Linguistic Reasoning
+                  </span>
+                  <span id="diag-confidence-band" class="text-[10px] font-mono font-semibold px-2 py-0.5 rounded bg-brand-500/20 text-brand-200 border border-brand-500/30">
+                    High Confidence
+                  </span>
+                </div>
+                
+                <p id="diag-reasoning-text" class="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
+                  Detailed linguistic explanation will populate upon selecting a sentence.
+                </p>
+
+                <!-- Detailed Linguistic Breakdown Checklist -->
+                <div id="diag-explanation-breakdown" class="space-y-2 pt-2.5 border-t border-white/10 text-xs font-mono text-slate-300">
+                  <!-- Populated dynamically via JS -->
+                </div>
+              </div>
+
+              <!-- Perplexity & Cadence Telemetry -->
+              <div class="grid grid-cols-2 gap-2 text-xs font-mono">
+                <div class="p-3 rounded-lg bg-surface-900 border border-white/5">
+                  <span class="text-[10px] text-slate-400 block">Perplexity (PPL)</span>
+                  <span id="diag-ppl-score" class="text-sm font-bold text-slate-100 mt-0.5 block">--</span>
+                  <span id="diag-ppl-desc" class="text-[10px] text-slate-500 block mt-0.5">Proxy entropy</span>
+                </div>
+                <div class="p-3 rounded-lg bg-surface-900 border border-white/5">
+                  <span class="text-[10px] text-slate-400 block">Syntactic Cadence</span>
+                  <span id="diag-syntactic-cadence" class="text-xs font-bold text-slate-200 mt-0.5 block">--</span>
+                  <span id="diag-cadence-desc" class="text-[10px] text-slate-500 block mt-0.5">Clause distribution</span>
+                </div>
+              </div>
+
+              <!-- Clichés & Generative Marker Lexicon -->
+              <div>
+                <div class="flex items-center justify-between mb-1.5">
+                  <span class="text-[10px] font-mono text-slate-400 uppercase tracking-wider">Generative Markers & Clichés</span>
+                  <span id="diag-cliches-count" class="text-[10px] font-mono text-slate-500">0 found</span>
+                </div>
+                <div id="diag-cliches-container" class="flex flex-wrap gap-1.5 p-2.5 rounded-lg bg-surface-900 border border-white/5 min-h-[38px] items-center">
+                  <span class="text-xs text-slate-500 italic font-mono">No generative clichés detected in this sentence</span>
+                </div>
+              </div>
+
+              <!-- Sentence-Level AI Model Hint -->
+              <div class="p-2.5 rounded-lg bg-surface-900 border border-white/5 flex items-center justify-between">
+                <span class="text-[10px] font-mono text-slate-400 uppercase tracking-wider">Source Signature:</span>
+                <span id="diag-model-hint" class="text-xs font-mono font-bold text-cyan-300">ChatGPT-4o Signature</span>
+              </div>
+
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= 3D. TAB 2: TRI-CORE NEURAL CONSENSUS ================= -->
+      <div id="rpanel-consensus" class="hidden space-y-4">
+        <div class="glass-card rounded-2xl p-6 space-y-4 border border-white/10 shadow-2xl">
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/5 pb-3">
+            <div>
+              <h4 class="text-sm font-bold text-white flex items-center gap-2">
+                <span class="w-2.5 h-2.5 rounded-full bg-brand-500 shadow-sm shadow-brand-500"></span>
+                Tri-Layer Neural Consensus Matrix
+              </h4>
+              <p class="text-xs text-slate-400 font-mono">Core Alpha (40%) + Core Beta (30%) + Core Gamma (30%) Weighted Consensus</p>
+            </div>
+            <span id="consensus-verdict-badge" class="text-xs font-mono font-bold bg-brand-500/10 text-brand-300 border border-brand-500/20 px-3 py-1 rounded-full w-fit">
+              Consensus: Unanimous
+            </span>
+          </div>
+
+          <!-- Neural Subsystem Grid -->
+          <div id="ensemble-models-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <!-- Cards populated via JS -->
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= 3E. TAB 3: STYLOMETRIC & EVASION FORENSICS ================= -->
+      <div id="rpanel-forensics" class="hidden space-y-4">
+        <div class="glass-card rounded-2xl p-6 space-y-4 border border-white/10 shadow-2xl">
+          <div class="border-b border-white/5 pb-3">
+            <h4 class="text-sm font-bold text-white flex items-center gap-2">
+              <span class="w-2.5 h-2.5 rounded-full bg-emerald-400"></span>
+              Stylometric, Evasion & Plagiarism Forensics
+            </h4>
+            <p class="text-xs text-slate-400 font-mono">Deep statistical validation of linguistic entropy, evasion tampering, and internal replication</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            
+            <!-- AI Source Platform & Generator Fingerprinting Card (Full Width) -->
+            <div class="md:col-span-2 p-5 rounded-xl border border-brand-500/30 bg-surface-950/80 space-y-3.5 shadow-xl">
+              <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-white/5 pb-2.5">
+                <div>
+                  <span class="text-xs font-mono uppercase tracking-wider text-brand-300 font-bold block flex items-center gap-1.5">
+                    <span>🤖</span> AI Source Platform & Generator Attribution
+                  </span>
+                  <p class="text-[11px] font-mono text-slate-400">Stylistic token fingerprinting matching generative LLM architectures</p>
+                </div>
+                <div class="flex items-center gap-2">
+                  <span id="tab-attribution-platform" class="text-xs font-mono font-bold px-3 py-1 rounded-full border bg-cyan-500/10 text-cyan-300 border-cyan-500/30">
+                    ChatGPT-4o (OpenAI)
+                  </span>
+                  <span id="tab-attribution-conf" class="text-xs font-mono text-slate-300">
+                    88.0% Confidence
+                  </span>
+                </div>
+              </div>
+
+              <!-- Attribution Reasoning -->
+              <p id="tab-attribution-reasoning" class="text-xs sm:text-sm text-slate-200 leading-relaxed font-sans">
+                Detected stylistic indicators characteristic of ChatGPT-4o.
+              </p>
+
+              <!-- Found Fingerprint Tokens -->
+              <div>
+                <span class="text-[10px] font-mono text-slate-400 uppercase tracking-wider block mb-1.5">Detected Signature Tokens:</span>
+                <div id="tab-attribution-markers" class="flex flex-wrap gap-1.5">
+                  <span class="text-xs font-mono bg-cyan-500/10 text-cyan-300 px-2.5 py-0.5 rounded border border-cyan-500/20">delve (x2)</span>
+                </div>
+              </div>
+
+              <!-- Multi-Model Attribution Probability Breakdown Grid -->
+              <div class="pt-2 border-t border-white/5 space-y-2">
+                <span class="text-[10px] font-mono text-slate-400 uppercase tracking-wider block">Model Fingerprint Distribution:</span>
+                <div id="tab-attribution-breakdown" class="grid grid-cols-2 sm:grid-cols-5 gap-2">
+                  <!-- Injected via JS -->
+                </div>
+              </div>
+            </div>
+
+            <!-- Paraphrase / Humanizer Evasion Card -->
+            <div class="p-5 rounded-xl border border-white/5 bg-surface-950/80 space-y-2.5">
+              <span class="text-xs font-mono uppercase tracking-wider text-slate-400 block">Humanizer & Evasion Detection</span>
+              <div class="flex items-center gap-2.5">
+                <span id="evasion-badge" class="text-xs font-mono font-bold px-2.5 py-0.5 rounded border bg-emerald-500/10 text-emerald-300 border-emerald-500/30">Low Risk</span>
+                <span id="burstiness-val" class="text-xs font-mono text-slate-400">Burstiness: 0.50</span>
+              </div>
+              <p id="evasion-reasoning" class="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
+                Natural sentence length variance and vocabulary entropy observed.
+              </p>
+              <span id="lexical-div-val" class="text-xs font-mono text-slate-400 block pt-1 border-t border-white/5">
+                Lexical Diversity (TTR): 62%
+              </span>
+            </div>
+
+            <!-- Internal Plagiarism & Redundancy Card -->
+            <div class="p-5 rounded-xl border border-white/5 bg-surface-950/80 space-y-2.5">
+              <span class="text-xs font-mono uppercase tracking-wider text-slate-400 block">Internal Plagiarism & Repetition</span>
+              <div class="flex items-center gap-2.5">
+                <span id="plagiarism-risk" class="text-xs font-mono font-bold px-2.5 py-0.5 rounded border bg-emerald-500/10 text-emerald-300 border-emerald-500/30">Clean</span>
+                <span id="plagiarism-pct" class="text-xs font-mono text-slate-400">0% Duplication</span>
+              </div>
+              <p id="plagiarism-reasoning" class="text-xs sm:text-sm text-slate-300 leading-relaxed font-sans">
+                No internal verbatim n-gram duplication detected across document sections.
+              </p>
+              <span class="text-xs font-mono text-slate-400 block pt-1 border-t border-white/5">
+                N-gram Jaccard Similarity: 0.00
+              </span>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- ================= 3F. TAB 4: SECTIONS & SLIDES BREAKDOWN ================= -->
+      <div id="rpanel-sections" class="hidden space-y-4">
+        <div class="glass-card rounded-2xl p-6 space-y-4 border border-white/10 shadow-2xl">
+          <div class="flex items-center justify-between border-b border-white/5 pb-3">
+            <div>
+              <h4 class="text-sm font-bold text-white flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full bg-indigo-400"></span>
+                Section-Wise & Slide Breakdown
+              </h4>
+              <p class="text-xs text-slate-400 font-mono">Granular quantification across structural document chapters or presentation slides</p>
+            </div>
+            <span id="section-count-badge" class="text-xs font-mono font-bold bg-white/5 text-slate-300 px-3 py-1 rounded-full border border-white/10">
+              0 Sections
+            </span>
+          </div>
+          <div id="sections-container" class="space-y-3">
+            <!-- Rendered dynamically via JS -->
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </main>
+
+  <!-- ================= SLIDE-OVER HISTORY DRAWER ================= -->
+  <div id="history-backdrop" onclick="toggleHistoryDrawer()" class="hidden fixed inset-0 bg-black/60 backdrop-blur-sm z-50 transition-opacity"></div>
+  
+  <aside id="history-drawer" class="fixed top-0 right-0 h-full w-full sm:w-[420px] bg-surface-950 border-l border-white/10 shadow-2xl z-50 transform translate-x-full transition-transform duration-300 ease-in-out flex flex-col">
+    
+    <!-- Drawer Header -->
+    <div class="p-5 border-b border-white/10 flex items-center justify-between">
+      <div>
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <span>📜 Audit History</span>
+          <span id="history-count-badge" class="text-xs font-mono bg-brand-500/20 text-brand-300 px-2 py-0.5 rounded-full border border-brand-500/30">0</span>
+        </h3>
+        <p class="text-[11px] text-slate-400 font-mono mt-0.5">Persisted locally in SQLite WAL database</p>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="fetchHistory()" class="text-xs font-mono text-brand-400 hover:text-brand-300 transition p-1 cursor-pointer" title="Refresh history">
+          ↻ Refresh
+        </button>
+        <button onclick="toggleHistoryDrawer()" class="text-slate-400 hover:text-white text-base font-bold p-1 cursor-pointer" title="Close drawer">
+          ✕
+        </button>
+      </div>
+    </div>
+
+    <!-- Search / Filter in History -->
+    <div class="p-3 border-b border-white/5 bg-surface-900/60">
+      <input type="text" id="history-search-input" oninput="filterHistoryItems(this.value)" placeholder="Search archives by filename or verdict..." class="w-full bg-surface-950 border border-white/10 rounded-lg px-3 py-1.5 text-xs font-mono text-slate-200 placeholder:text-slate-600 focus:outline-none focus:border-brand-500">
+    </div>
+
+    <!-- History List Items Container -->
+    <div id="history-list" class="flex-1 overflow-y-auto p-4 space-y-2.5">
+      <div class="text-center py-10 text-xs text-slate-500 font-mono">
+        Loading archives...
+      </div>
+    </div>
+
+  </aside>
+
+  <!-- ================= AMBIENT FOOTER ================= -->
+  <footer class="border-t border-white/[0.08] py-4 text-center text-xs text-slate-500 font-mono bg-[#070b14]/70 backdrop-blur-md">
+    VeritasDoc Forensic AI Intelligence Suite &bull; 100% Local Inference &bull; SHA-256 Tamper-Evident
+  </footer>
+
+  <!-- Vanilla JS Application Script -->
+  <script src="/static/app.js?v=12.0"></script>
+</body>
+</html>

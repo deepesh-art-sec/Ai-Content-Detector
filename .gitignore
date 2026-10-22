@@ -1,0 +1,36 @@
+# Data and databases
+data/analyses.db*
+data/uploads/*
+!data/uploads/.gitkeep
+*.db
+*.sqlite3
+
+# Python bytecode & cache
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+
+# Virtual environments
+venv/
+.venv/
+env/
+ENV/
+
+# Environment variables
+.env
+
+# Test & Temporary PDFs
+audit_report_test.pdf
+clean_audit_report.pdf
+ensemble_pdf_test.pdf
+tri_model_audit_report.pdf
+ps_extracted.txt
+
+# IDE and OS
+.idea/
+.vscode/
+*.swp
+.DS_Store
+Thumbs.db

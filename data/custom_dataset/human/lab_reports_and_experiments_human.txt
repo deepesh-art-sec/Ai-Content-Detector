@@ -1,0 +1,25 @@
+We set up the air track in the mechanics lab around two in the afternoon, making sure the bubble level was centered between the two brass leveling screws.
+During our third trial run, the wooden glider bumped against the photogate bracket because the track was vibrating slightly when students walked past our table.
+We discarded that reading and ran the cart down the incline four more times, recording the millisecond times in our blue laboratory spiral notebooks.
+The digital calipers had a zero-offset error of 0.05 millimeters, so we had to subtract that value from every single cylinder diameter measurement before calculating the volume.
+Our calculated value for the acceleration due to gravity came out to 9.62 meters per second squared, which is about two percent lower than the accepted standard value.
+Professor Higgins stopped by our bench to check the wiring on the oscilloscope because channel two was picking up sixty-cycle hum from the overhead fluorescent fixtures.
+Once we swapped out the coaxial cable with a shielded BNC lead from the supply drawer, the sine wave cleared up right away and stopped drifting across the screen.
+We heated the copper calorimeter cup over the Bunsen burner until the water reached a rolling boil at ninety-eight degrees Celsius.
+I accidentally spilled a few drops of water when transferring the metal cylinder with tongs, but my partner noted the mass discrepancy on line seven of the worksheet.
+The titration took much longer than expected because the stopcock on the fifty-milliliter buret was sticking and made it hard to add single drops at a time.
+Right around eighteen point four milliliters, the solution in the flask suddenly turned a faint pink color that stayed visible for more than thirty seconds.
+We repeated the acid-base titration three times to make sure our calculated molarity wasn't just a fluke from an overshot endpoint.
+Under the compound microscope, the chloroplasts in the Elodea leaf were clearly streaming around the central vacuole in a smooth circular motion called cyclosis.
+We counted forty-two cells across the field of view under the high-power objective and sketched the cell walls with a sharp two-B pencil in the margins.
+The breadboard was a complete mess of jumper wires by the time we finished wiring the op-amp comparator circuit with the feedback potentiometer.
+When we turned on the DC bench power supply, the green LED wouldn't light up until Sarah realized the cathode pin was plugged into the wrong ground rail.
+We packed all the multimeters, patch cords, and test weights back into the wooden storage cabinet before the teaching assistant locked the lab door at five.
+Our lab group decided to divide up the write-up so that Mark wrote the procedure section while I worked through the propagation of uncertainty equations in Excel.
+The standard deviation was higher than last week's experiment mainly because we had to time the pendulum swings by hand with a stopwatch instead of using the laser photogates.
+Overall, the experiment proved that air resistance can be safely ignored for small steel spheres falling over distances of less than two meters in a closed room.
+We noticed condensation building up on the outside of the glass beaker, so we had to wipe it down with a paper towel before placing it on the electronic balance.
+The magnetic field sensor gave erratic readings whenever someone's cell phone vibrated near the bench, so we placed all our phones on the instructor's desk.
+Our final graph of pressure versus inverse volume yielded a straight line with an R-squared correlation of zero point nine nine four, confirming Boyle's law.
+We were missing one of the alligator clips for the voltmeter, so we borrowed one from table four after they finished their circuit measurements.
+The temperature in the room climbed by nearly three degrees over the course of the afternoon as the vacuum pump ran continuously beneath the fume hood.

@@ -1,0 +1,11 @@
+{
+  "model_name": "Veritas Proprietary Core (Custom Model)",
+  "model_id": "core_custom",
+  "created_at": "2026-10-21T11:31:35.566734+00:00",
+  "accuracy_pct": 100.0,
+  "f1_score": 1.0,
+  "training_samples": 195,
+  "architecture": "Dual-Vector Morphological & Syntactic TF-IDF + Calibrated Classifier",
+  "input_type": "sentences",
+  "file_name": "custom_detector.joblib"
+}
