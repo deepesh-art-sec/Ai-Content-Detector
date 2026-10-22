@@ -1,3 +1,13 @@
+---
+title: AI Content Detector
+emoji: 🛡️
+colorFrom: indigo
+colorTo: blue
+sdk: docker
+app_port: 7860
+pinned: false
+---
+
 # AI Content Detector: Explainable AI & Plagiarism Forensic Suite
 
 > **Multi-Tier Forensic System**  
