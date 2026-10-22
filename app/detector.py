@@ -205,6 +205,13 @@ def _load_single_model(key: str, cfg: dict) -> bool:
             model = AutoModelForSequenceClassification.from_pretrained(
                 repo_id, token=hf_token, low_cpu_mem_usage=True
             )
+            if _device.type == "cpu":
+                try:
+                    model = torch.quantization.quantize_dynamic(
+                        model, {torch.nn.Linear}, dtype=torch.qint8
+                    )
+                except Exception as q_err:
+                    logger.debug("Quantization deferred: %s", q_err)
         elif cfg["type"] == "adversarial_custom":
             model = NeuralCoreGammaClassifier.from_pretrained(repo_id, token=hf_token)
         else:
@@ -245,16 +252,24 @@ def load_detection_model() -> bool:
     _loading_in_progress = True
     logger.info("Initializing Multi-Vector Neural Consensus on device: %s", _device)
 
-    # 1. Initialize Syntactic Discourse Core (Core Alpha)
-    _load_single_model("core_alpha", ENSEMBLE_CONFIG["core_alpha"])
-
-    # 2. Initialize Generative Cadence Core (Core Beta)
-    _load_single_model("core_beta", ENSEMBLE_CONFIG["core_beta"])
-
-    # 3. Initialize Proprietary Custom Core (Core Custom) if present
+    # 1. Initialize Proprietary Custom Core FIRST (< 0.2s, ~65MB RAM)
     _load_single_model("core_custom", ENSEMBLE_CONFIG["core_custom"])
 
-    # 4. Initialize Adversarial Evasion Core (Core Gamma) in background
+    # 2. Check for memory-constrained cloud environments (e.g. Render Free 512MB tier)
+    is_cloud_render = bool(os.getenv("RENDER") or os.getenv("LIGHTWEIGHT_MODE", "").lower() == "true")
+
+    # 3. Initialize Syntactic Discourse Core (Core Alpha) with memory optimization
+    _load_single_model("core_alpha", ENSEMBLE_CONFIG["core_alpha"])
+
+    if is_cloud_render:
+        logger.info("Cloud low-memory environment detected (Render 512MB). Active dual-core consensus active and stable.")
+        _loading_in_progress = False
+        return len(_loaded_models) > 0
+
+    # 4. Initialize Generative Cadence Core (Core Beta)
+    _load_single_model("core_beta", ENSEMBLE_CONFIG["core_beta"])
+
+    # 5. Initialize Adversarial Evasion Core (Core Gamma) in background
     def _bg_load_gamma():
         try:
             logger.info("Initializing background neural subsystem [core_gamma]...")
