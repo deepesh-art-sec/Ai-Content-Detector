@@ -28,6 +28,6 @@ RUN mkdir -p data/uploads custom_models && \
 
 USER user
 
-EXPOSE 7860
+EXPOSE 7860 8000 10000
 
-CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "7860"]
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]

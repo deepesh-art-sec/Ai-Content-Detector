@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: ai-content-detector
+    runtime: docker
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: HF_TOKEN
+        sync: false
+      - key: PYTHONUNBUFFERED
+        value: "1"
