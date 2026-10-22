@@ -1,8 +1,7 @@
 FROM python:3.11-slim
 
 ENV PYTHONUNBUFFERED=1 \
-    PYTHONDONTWRITEBYTECODE=1 \
-    PORT=7860
+    PYTHONDONTWRITEBYTECODE=1
 
 WORKDIR /app
 
@@ -15,7 +14,7 @@ RUN pip install --no-cache-dir --upgrade pip && \
     pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu
 
 COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+RUN pip install --no-cache-dir --extra-index-url https://download.pytorch.org/whl/cpu -r requirements.txt
 
 RUN useradd -m -u 1000 user
 ENV HOME=/home/user \
@@ -28,6 +27,6 @@ RUN mkdir -p data/uploads custom_models && \
 
 USER user
 
-EXPOSE 7860 8000 10000
+EXPOSE 10000 8000 7860
 
-CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-8000}"]
+CMD ["sh", "-c", "uvicorn app.main:app --host 0.0.0.0 --port ${PORT:-10000}"]

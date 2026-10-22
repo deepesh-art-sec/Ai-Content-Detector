@@ -202,7 +202,9 @@ def _load_single_model(key: str, cfg: dict) -> bool:
         tokenizer = AutoTokenizer.from_pretrained(repo_id, token=hf_token)
 
         if cfg["type"] == "sequence_classification":
-            model = AutoModelForSequenceClassification.from_pretrained(repo_id, token=hf_token)
+            model = AutoModelForSequenceClassification.from_pretrained(
+                repo_id, token=hf_token, low_cpu_mem_usage=True
+            )
         elif cfg["type"] == "adversarial_custom":
             model = NeuralCoreGammaClassifier.from_pretrained(repo_id, token=hf_token)
         else:
